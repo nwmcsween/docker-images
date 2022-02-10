@@ -16,8 +16,8 @@ LABEL org.opencontainers.image.created="$date"\
     org.opencontainers.image.title="$title"\
     org.opencontainers.image.url="$url"
 
-COPY --from=nwmcsween/stch:latest /bin/stch /bin/stch
-COPY --from=nwmcsween/stch:latest /bin/stch_dir /bin/stch_dir
+COPY --from=nwmcsween/stch:0.0.1 /bin/stch /bin/stch
+COPY --from=nwmcsween/stch:0.0.1 /bin/stch_dir /bin/stch_dir
 COPY init /bin/init
 
 ENTRYPOINT ["/bin/init"]
