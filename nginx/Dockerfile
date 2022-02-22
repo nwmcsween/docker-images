@@ -24,8 +24,9 @@ ENV WORKDIR="/var/www"
 WORKDIR ${WORKDIR}
 
 RUN set -eu; apk --update add --no-cache nginx && rm -rf /etc/nginx/* /etc/conf.d/* /etc/init.d/* /var/www/*
-COPY --from=nwmcsween/init:0.0.3 /bin/* /bin/
+COPY --from=nwmcsween/init:0.0.5 /bin/* /bin/
 COPY root /
+RUN build
 
 ENTRYPOINT ["/bin/init"]
 CMD ["nginx"]
