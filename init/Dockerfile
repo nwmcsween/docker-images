@@ -19,5 +19,4 @@ LABEL org.opencontainers.image.created="$date"\
 COPY --from=nwmcsween/stch:0.0.1 /bin/stch /bin/stch
 COPY --from=nwmcsween/stch:0.0.1 /bin/stch_dir /bin/stch_dir
 COPY init /bin/init
-
-ENTRYPOINT ["/bin/init"]
+COPY build /bin/build

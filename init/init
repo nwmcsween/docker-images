@@ -1,25 +1,7 @@
 #!/bin/sh
 set -e
 
-# We cannot change the packages user/group as it may install user/group specific files/directories across the filesystem
-# what we can do is ensure a container user is created with a specific default container user and add the package user
-# to the container group.
-name="_container"
-
-if [ -n "$USERID" ]; then
-    [ -z "$WORKDIR" ] && WORKDIR=/tmp
-    getent passwd $name > /dev/null 2>&1 && deluser $name
-    getent group $name > /dev/null 2>&1 && delgroup $name
-    [ -n "$GROUPID" ] && [ "$USERID" -ne "$GROUPID" ] && addgroup -g $GROUPID $name
-    # adduser will chown -R everyting in the WORKDIR without -H, we don't want this as on dirs with a large amount of files/dirs
-    # will cause massive IO, instead ensure the $WORKDIR itself is chowned afterwards
-    adduser -D -g 'Container user' ${GROUPID:+-G $name} -h $WORKDIR -H -s /sbin/nologin -u $USERID $name
-    chown root:$name $WORKDIR
-fi
-
-[ -n "$GROUPADD" ] && addgroup $GROUPADD $name
-
-stch_dir || exit 1
+stch_dir "${STCH_DIR:-"/etc"}" || exit 1
 
 # Ensure stdout and stderr are writable as anyone due to some applications not logging to stdout and stderr.
 # We can't chown as we don't know the specific user the application might run as.
