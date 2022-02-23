@@ -18,7 +18,7 @@ jobs:
 
       - name: Git metadata
         id: tags
-        uses: olegtarasov/get-tag@v2.1
+        uses: olegtarasov/get-tag@v2
         with:
           tagRegex: '(?<package>.+)@(?<version>.+)'
 
@@ -73,6 +73,12 @@ jobs:
           username: ${{ secrets.REGISTRY_USERNAME }}
           password: ${{ secrets.REGISTRY_PASSWORD }}
 
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.tags.outputs.package }}
+
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v2
         with:
@@ -80,4 +86,15 @@ jobs:
           context: ./${{ steps.tags.outputs.package }}
           tags: ${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.tags.outputs.package }}:${{ steps.tags.outputs.version }},${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.tags.outputs.package }}:${{ github.sha }},${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.tags.outputs.package }}:latest
           platforms: linux/amd64,linux/arm64
+          labels: ${{ steps.meta.outputs.labels }}
           push: true
+
+      - name: Push README to Dockerhub
+        uses: christian-korneck/update-container-description-action@v1
+        env:
+          DOCKER_USER: ${{ secrets.REGISTRY_USERNAME }}
+          DOCKER_PASS: ${{ secrets.REGISTRY_PASSWORD }}
+        with:
+          destination_container_repo: ${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.tags.outputs.package }}
+          provider: dockerhub
+          readme_file: readme.md
