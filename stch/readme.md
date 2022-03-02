@@ -13,20 +13,14 @@ All other templating languages were:
 
 ## How
 
-* `$()` and `\`\`` are escaped
+* `\`\`` is escaped
 * `$[[:alpha:]_][[:alnum:]_]*` is escaped.
 * `${var}` is not escaped and will do env replacement.
-* `{{!cmd}}` is command replacement and is converted to `$(cmd)`.
-* `{{>file}}` is file replacement and is converted to `$(cat file | stch)`.
-
-## Gotchas/Issues
-
-* `{{>file}}` is single depth (not recursive) and is relative to the script execution.
-* `{{!cmd}}` cannot be nested as this would need recursive replacement, pipe or use helper functions to manage this (patches welcome as long as it's not a loop).
+* `$()` is not escaped and will do command substitution.
 
 ## Example
 
 ```sh
 $variables are not interpolated but ${variables} are,
-{{! echo "will execute a command"}} and {{>this/will/include/a/file/given/a/path.txt}}
+$(echo "will execute a command") and ${ENV_VAR} will be subtituted.
 ```
