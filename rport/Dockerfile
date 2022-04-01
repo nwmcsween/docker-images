@@ -13,6 +13,9 @@ ARG rport_frontend_version=${rport_frontend_version:-0.6.0-build-966}
 ARG novnc_version
 ARG novnc_version=${no_nvnc_version:-1.3.0}
 
+ARG TARGETARCH
+ARG TARGETVARIANT
+
 ENV RPORT_CFG_API_ACCESS_LOG_FILE=/proc/self/fd/1
 ENV RPORT_CFG_API_ADDR=0.0.0.0:3000
 ENV RPORT_CFG_API_AUTH_GROUP_TABLE=groups
@@ -39,7 +42,15 @@ RUN set -eu; \
     rm -rf /var/lib/apt/lists/*
 
 RUN set -e; \
-    wget -qO- https://github.com/cloudradar-monitoring/rport/releases/download/${rport_version}/rportd_${rport_version}_Linux_x86_64.tar.gz | tar xvz -C /bin && \
+    VARIANT=$TARGETVARIANT && \
+    case "$TARGETARCH${VARIANT:+/$VARIANT}" in \
+    "amd64")  ARCH=x86_64 ;; \
+    "arm64")  ARCH=aarch64 ;; \
+    "arm/v7") ARCH=armv7l ;; \
+    "arm/v6") ARCH=armv6l ;; \
+    esac && \
+    echo "Building for OS: $(uname -s), with ARCH: ${ARCH}, VARIANT: ${VARIANT}" && \
+    wget -qO- "https://github.com/cloudradar-monitoring/rport/releases/download/${rport_version}/rportd_${rport_version}_$(uname -s)_${ARCH}.tar.gz" | tar xvz -C /bin && \
     rm /bin/rportd.example.conf
 
 RUN set -e; \
