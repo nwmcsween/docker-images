@@ -97,4 +97,4 @@ jobs:
         with:
           destination_container_repo: ${{ secrets.REGISTRY_NAMESPACE }}/${{ steps.tags.outputs.package }}
           provider: dockerhub
-          readme_file: readme.md
+          readme_file: ${{steps.tags.outputs.package}}/readme.md
