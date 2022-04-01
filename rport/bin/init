@@ -1,0 +1,20 @@
+#!/bin/sh
+set -e
+
+# Since rportd allows configuring all aptions on the cli(?) we can find prefixed env vars and create args to pass to rportd.
+# RPORT_DB_NAME=foo
+args="$(env | awk -F= '/^RPORT_CFG_*=*/ { print $1 " " $2 }' | while read -r key val; do
+    # RPORT_DB_NAME -> --db-name
+    switch="$(echo "$key" | cut -f3- -d_ | tr '[:upper:]' '[:lower:]' | tr '_' '-')"
+    [ -z "$switch" ] && exit 1
+    # --db-name foo
+    printf "%s %s " "--$switch" "$val"
+done)"
+
+sqlite3 ~/database.db "insert or replace into users(username, password) values ('admin', '$RPORT_ADMIN_PASSWORDHASH');"
+sqlite3 ~/database.db "insert or replace into groups values ('admin','Administrators');"
+
+set -- $args "$@"
+
+# exec rportd with generated args and override with any container args
+exec rportd "$@"
