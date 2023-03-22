@@ -22,7 +22,7 @@ RUN set -eu; mkdir -p /var/lib/dnsmasq/tftp &&\
     cd /var/lib/dnsmasq/tftp && wget https://boot.ipxe.org/ipxe.efi &&\
     chown -R dnsmasq:dnsmasq /var/lib/dnsmasq
 
-COPY --from=nwmcsween/init:0.0.3 /bin/* /bin/
+COPY --from=nwmcsween/init:0.0.5 /bin/* /bin/
 
 ENTRYPOINT ["/bin/init"]
 CMD ["dnsmasq", "--keep-in-foreground", "--log-async=100", "--log-facility=-", "--tftp-root=/var/lib/dnsmasq/tftp"]
