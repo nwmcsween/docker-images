@@ -1,4 +1,4 @@
-ARG from=alpine:3.14.2
+ARG from=alpine:3.17.2
 
 FROM $from
 
