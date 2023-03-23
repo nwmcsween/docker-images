@@ -1,4 +1,4 @@
-FROM caddy:2.5.2-builder-alpine AS builder
+FROM caddy:2.6.4-builder-alpine AS builder
 
 
 ARG date="1970-01-01T00:00:00Z"
@@ -12,6 +12,6 @@ ARG url="https://caddyserver.com/"
 RUN xcaddy build \
     --with github.com/caddy-dns/azure
 
-FROM caddy:2.5.2-alpine
+FROM caddy:2.6.4-alpine
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
